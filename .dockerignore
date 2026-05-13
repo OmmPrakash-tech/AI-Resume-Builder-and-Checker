@@ -1,0 +1,33 @@
+# Python
+venv/
+**/venv/
+
+__pycache__/
+**/__pycache__/
+
+.pytest_cache/
+**/.pytest_cache/
+
+*.pyc
+
+# Node
+node_modules/
+**/node_modules/
+
+dist/
+
+# Git
+.git/
+
+# Environment
+.env
+
+# VSCode
+.vscode/
+
+# Logs
+*.log
+
+# OS
+Thumbs.db
+.DS_Store

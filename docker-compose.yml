@@ -1,0 +1,163 @@
+services:
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend/Dockerfile
+
+    container_name: resumeai-frontend
+
+    ports:
+      - "5173:5173"
+
+    volumes:
+      - ./Frontend:/app
+      - /app/node_modules
+
+    depends_on:
+      - fastapi
+      - express
+
+    networks:
+      - resumeai-network
+
+
+
+  fastapi:
+    build:
+      context: .
+      dockerfile: docker/fastapi/Dockerfile
+
+    container_name: resumeai-fastapi
+
+    ports:
+      - "8000:8000"
+
+    volumes:
+      - ./backend-fastapi:/app
+
+    env_file:
+      - ./backend-fastapi/.env
+
+    depends_on:
+      - postgres
+      - redis
+
+    networks:
+      - resumeai-network
+
+
+
+  express:
+    build:
+      context: .
+      dockerfile: docker/express/Dockerfile
+
+    container_name: resumeai-express
+
+    ports:
+      - "3000:3000"
+
+    volumes:
+      - ./backend-express:/app
+      - /app/node_modules
+
+    env_file:
+      - ./backend-express/.env
+
+    depends_on:
+      - redis
+
+    networks:
+      - resumeai-network
+
+
+
+  ai-service:
+    build:
+      context: .
+      dockerfile: docker/ai-service/Dockerfile
+
+    container_name: resumeai-ai
+
+    ports:
+      - "8001:8001"
+
+    volumes:
+      - ./ai-service:/app
+
+    env_file:
+      - ./ai-service/.env
+
+    networks:
+      - resumeai-network
+
+
+
+  postgres:
+    image: postgres:16
+
+    container_name: resumeai-postgres
+
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: resumeai
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+    networks:
+      - resumeai-network
+
+
+
+  redis:
+    image: redis:latest
+
+    container_name: resumeai-redis
+
+    ports:
+      - "6379:6379"
+
+    volumes:
+      - redis-data:/data
+
+    networks:
+      - resumeai-network
+
+
+
+  nginx:
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
+
+    container_name: resumeai-nginx
+
+    ports:
+      - "80:80"
+
+    depends_on:
+      - frontend
+      - fastapi
+      - express
+      - ai-service
+
+    networks:
+      - resumeai-network
+
+
+
+volumes:
+  postgres-data:
+  redis-data:
+
+
+
+networks:
+  resumeai-network:
+    driver: bridge

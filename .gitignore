@@ -1,24 +1,87 @@
-# Node
+# =========================
+# Node.js
+# =========================
 node_modules/
+**/node_modules/
+
 dist/
+build/
+coverage/
 
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =========================
 # Python
+# =========================
 venv/
+**/venv/
+
 __pycache__/
+**/__pycache__/
+
 *.pyc
+*.pyo
+*.pyd
 
-# Environment
+.pytest_cache/
+**/.pytest_cache/
+
+.mypy_cache/
+
+# =========================
+# Environment Variables
+# =========================
 .env
+**/.env
 
-# VSCode
+.env.local
+.env.development.local
+.env.production.local
+
+# =========================
+# VS Code
+# =========================
 .vscode/
 
+# =========================
+# Docker
+# =========================
+docker-data/
+
+# =========================
 # Logs
+# =========================
 *.log
+logs/
 
-# Build
-build/
-
-# OS
+# =========================
+# OS Files
+# =========================
 .DS_Store
 Thumbs.db
+
+# =========================
+# PostgreSQL / SQLite
+# =========================
+*.sqlite3
+
+# =========================
+# Redis Dumps
+# =========================
+dump.rdb
+
+# =========================
+# AI / ML Models
+# =========================
+models-cache/
+*.pt
+*.bin
+*.onnx
+
+# =========================
+# Temporary Files
+# =========================
+tmp/
+temp/

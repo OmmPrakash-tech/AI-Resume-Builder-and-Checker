@@ -1,0 +1,7 @@
+FROM nginx:latest
+
+COPY nginx/nginx.conf /etc/nginx/nginx.conf
+
+COPY nginx/conf.d /etc/nginx/conf.d
+
+COPY nginx/ssl /etc/nginx/ssl
