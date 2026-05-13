@@ -1,13 +1,7 @@
-import { Button } from "@/components/ui/button"
+import LandingPage from "./pages/LandingPage";
 
 function App() {
-  return (
-    <div className="min-h-screen flex items-center justify-center">
-      <Button>
-        ResumeAI 🚀
-      </Button>
-    </div>
-  )
+  return <LandingPage />;
 }
 
-export default App
+export default App;
