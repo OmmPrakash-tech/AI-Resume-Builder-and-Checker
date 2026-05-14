@@ -1,21 +1,71 @@
+import { useState } from "react";
+
+import { loginUser } from "../../api/authApi";
+
 export default function LoginModal({
   isOpen = false,
   onClose,
   onSignupClick,
 }) {
-  const handleSubmit = (event) => {
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (event) => {
+    setFormData({
+      ...formData,
+      [event.target.name]: event.target.value,
+    });
+  };
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    console.log("Login submitted");
+    try {
+      setLoading(true);
 
-    if (onClose) {
-      onClose();
+      const data = await loginUser(
+        formData
+      );
+
+      console.log("Login Success:", data);
+
+      // Save JWT token
+      localStorage.setItem(
+        "token",
+        data.access_token
+      );
+
+      alert("Login successful");
+
+      setFormData({
+        email: "",
+        password: "",
+      });
+
+      if (onClose) {
+        onClose();
+      }
+    } catch (error) {
+      console.error(error);
+
+      alert(
+        error.response?.data?.detail ||
+          "Login failed"
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div
-      className={`modal-overlay ${isOpen ? "active" : ""}`}
+      className={`modal-overlay ${
+        isOpen ? "active" : ""
+      }`}
       role="dialog"
       aria-modal="true"
     >
@@ -27,7 +77,9 @@ export default function LoginModal({
             alignItems: "flex-start",
           }}
         >
-          <h3 className="modal-title">Welcome back</h3>
+          <h3 className="modal-title">
+            Welcome back
+          </h3>
 
           <button
             type="button"
@@ -35,40 +87,60 @@ export default function LoginModal({
             onClick={onClose}
             aria-label="Close login modal"
           >
-            <i className="ti ti-x" aria-hidden="true"></i>
+            <i
+              className="ti ti-x"
+              aria-hidden="true"
+            ></i>
           </button>
         </div>
 
         <p className="modal-sub">
-          Sign in to continue building better resumes.
+          Sign in to continue building better
+          resumes.
         </p>
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="login-email">Email address</label>
+            <label htmlFor="login-email">
+              Email address
+            </label>
 
             <input
               id="login-email"
+              name="email"
               type="email"
               placeholder="p.mehta@example.com"
+              value={formData.email}
+              onChange={handleChange}
               required
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="login-password">Password</label>
+            <label htmlFor="login-password">
+              Password
+            </label>
 
             <input
               id="login-password"
+              name="password"
               type="password"
               placeholder="••••••••"
+              value={formData.password}
+              onChange={handleChange}
               required
             />
           </div>
 
           <div className="form-actions">
-            <button type="submit" className="btn btn-indigo">
-              Sign in
+            <button
+              type="submit"
+              className="btn btn-indigo"
+              disabled={loading}
+            >
+              {loading
+                ? "Signing in..."
+                : "Sign in"}
             </button>
           </div>
 

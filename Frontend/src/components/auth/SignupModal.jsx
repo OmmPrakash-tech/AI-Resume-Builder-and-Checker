@@ -1,21 +1,67 @@
+import { useState } from "react";
+
+import { registerUser } from "../../api/authApi";
+
 export default function SignupModal({
   isOpen = false,
   onClose,
   onLoginClick,
 }) {
-  const handleSubmit = (event) => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (event) => {
+    setFormData({
+      ...formData,
+      [event.target.name]: event.target.value,
+    });
+  };
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    console.log("Signup submitted");
+    try {
+      setLoading(true);
 
-    if (onClose) {
-      onClose();
+      const data = await registerUser(
+        formData
+      );
+
+      console.log("Signup Success:", data);
+
+      alert("Account created successfully");
+
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+      });
+
+      if (onClose) {
+        onClose();
+      }
+    } catch (error) {
+      console.error(error);
+
+      alert(
+        error.response?.data?.detail ||
+          "Signup failed"
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div
-      className={`modal-overlay ${isOpen ? "active" : ""}`}
+      className={`modal-overlay ${
+        isOpen ? "active" : ""
+      }`}
       role="dialog"
       aria-modal="true"
     >
@@ -27,7 +73,9 @@ export default function SignupModal({
             alignItems: "flex-start",
           }}
         >
-          <h3 className="modal-title">Get started</h3>
+          <h3 className="modal-title">
+            Get started
+          </h3>
 
           <button
             type="button"
@@ -35,7 +83,10 @@ export default function SignupModal({
             onClick={onClose}
             aria-label="Close signup modal"
           >
-            <i className="ti ti-x" aria-hidden="true"></i>
+            <i
+              className="ti ti-x"
+              aria-hidden="true"
+            ></i>
           </button>
         </div>
 
@@ -45,34 +96,49 @@ export default function SignupModal({
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="signup-name">Full name</label>
+            <label htmlFor="signup-name">
+              Full name
+            </label>
 
             <input
               id="signup-name"
+              name="name"
               type="text"
               placeholder="Priya Mehta"
+              value={formData.name}
+              onChange={handleChange}
               required
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="signup-email">Email address</label>
+            <label htmlFor="signup-email">
+              Email address
+            </label>
 
             <input
               id="signup-email"
+              name="email"
               type="email"
               placeholder="p.mehta@example.com"
+              value={formData.email}
+              onChange={handleChange}
               required
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="signup-password">Password</label>
+            <label htmlFor="signup-password">
+              Password
+            </label>
 
             <input
               id="signup-password"
+              name="password"
               type="password"
               placeholder="••••••••"
+              value={formData.password}
+              onChange={handleChange}
               required
             />
           </div>
@@ -97,8 +163,14 @@ export default function SignupModal({
           </label>
 
           <div className="form-actions">
-            <button type="submit" className="btn btn-indigo">
-              Create my free account
+            <button
+              type="submit"
+              className="btn btn-indigo"
+              disabled={loading}
+            >
+              {loading
+                ? "Creating account..."
+                : "Create my free account"}
             </button>
           </div>
 
