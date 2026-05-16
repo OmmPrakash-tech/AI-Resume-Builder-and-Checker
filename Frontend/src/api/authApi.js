@@ -59,6 +59,9 @@ export const logoutUser = async () => {
     "/auth/logout"
   );
 
+  // remove token
+  localStorage.removeItem("token");
+
   return response.data;
 };
 
@@ -68,6 +71,9 @@ export const deleteAccount = async () => {
   const response = await api.delete(
     "/auth/delete-account"
   );
+
+  // remove token
+  localStorage.removeItem("token");
 
   return response.data;
 };

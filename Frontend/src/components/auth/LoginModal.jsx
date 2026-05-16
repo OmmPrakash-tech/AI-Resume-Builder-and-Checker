@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import { useNavigate } from "react-router-dom";
 import { loginUser } from "../../api/authApi";
 
 export default function LoginModal({
@@ -7,6 +7,9 @@ export default function LoginModal({
   onClose,
   onSignupClick,
 }) {
+
+  const navigate = useNavigate();
+  
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -21,45 +24,53 @@ export default function LoginModal({
     });
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
 
-    try {
-      setLoading(true);
+const handleSubmit = async (event) => {
+  event.preventDefault();
 
-      const data = await loginUser(
-        formData
-      );
+  try {
+    setLoading(true);
 
-      console.log("Login Success:", data);
+    const data = await loginUser(formData);
 
-      // Save JWT token
-      localStorage.setItem(
-        "token",
-        data.access_token
-      );
+    console.log("Login Success:", data);
 
-      alert("Login successful");
+    // Save JWT token
+    localStorage.setItem(
+      "token",
+      data.access_token
+    );
 
-      setFormData({
-        email: "",
-        password: "",
-      });
+    alert("Login successful");
 
-      if (onClose) {
-        onClose();
-      }
-    } catch (error) {
-      console.error(error);
+    // Reset form
+    setFormData({
+      email: "",
+      password: "",
+    });
 
-      alert(
-        error.response?.data?.detail ||
-          "Login failed"
-      );
-    } finally {
-      setLoading(false);
+    // Close modal if exists
+    if (onClose) {
+      onClose();
     }
-  };
+
+    // Navigate to dashboard
+    navigate("/dashboard");
+
+  } catch (error) {
+    console.error(error);
+
+    alert(
+      error.response?.data?.detail ||
+      "Login failed"
+    );
+
+  } finally {
+    setLoading(false);
+  }
+};
+
+
 
   return (
     <div
@@ -132,7 +143,19 @@ export default function LoginModal({
             />
           </div>
 
-          <div className="form-actions">
+         <div
+  className="forgot-password-wrapper"
+>
+  <button
+    type="button"
+    className="text-button"
+    onClick={() => navigate("/forgot-password")}
+  >
+    Forgot Password?
+  </button>
+</div>
+
+<div className="form-actions">
             <button
               type="submit"
               className="btn btn-indigo"
